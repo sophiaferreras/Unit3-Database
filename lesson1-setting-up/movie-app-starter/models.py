@@ -13,3 +13,6 @@ class Movie(db.Model):
     description = db.Column(db.Text)
     poster_url = db.Column(db.String(500))
     created_at = db.Column(db.DateTime(timezone=True), default=lambda:datetime.now(timezone.utc))
+
+    def __repr__(self):
+        return f"<Movie: {self.title} ({self.year})>"
