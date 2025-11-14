@@ -10,30 +10,31 @@ app = Flask(__name__)
 app.config['SECRET_KEY'] = 'dev-secret-key-change-in-production'
 
 # DATABASE CONFIGURATION
-# SQLite database will be stored in instance
-#instance folder is automatically created by Flask
+# SQLite database will be stored in instance/cinematch.db
+# instance folder is automatically created by Flask
 app.config["SQLALCHEMY_DATABASE_URI"] = 'sqlite:///cinematch.db'
 
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
-# initialize the database
+#initialize the database
 db.init_app(app)
+
 
 # DATABASE INITIALIZATION
 def create_tables():
     """Create all database tables
-    This runs once to set up database"""
+    This runs once to set up the database"""
     with app.app_context():
         db.create_all()
-        print('Database tables created!')
-
+        print("✅Database tables created!")
+    
 def load_initial_movies():
-    """Checks if database is empty, if so, adds sample movies"""
+    """Checks if the database is empty, and id so adds sample movies"""
     with app.app_context():
-        # check if any movies exist
+        #Check if any movies exist
         if Movie.query.count() == 0:
-            print('Loading initial movies')
-            # create movie objects
+            print("🎥Loading initial movies!")
+            #Create movie objects
             movies = [
                 Movie(
                     title="Inception",
@@ -81,21 +82,23 @@ def load_initial_movies():
                     poster_url="https://placehold.co/300x450/4facfe/ffffff?text=Dark+Knight"
                 )
             ]
-            # add all movies to the session (staging area)
+            # Add all the movies to the session(staging area)
             for movie in movies:
                 db.session.add(movie)
-            # commit to database (make changes permanent)
-                db.session.commit()
-                print(f"added {len(movies)} movies to database")
-        else: 
-            print(f"Database already has {Movie.query.count()} movies")
-# ============================================================================
+            #Commit to database (make changes permanent)
+            db.session.commit()
+            print(f"Added {len(movies)} movies to database!")
+        else:
+            print(f"Database already has {Movie.query.count()} movies!")
+
+            
+# ============================
 # ROUTES
-# ============================================================================
+# ============================
 
 @app.route('/')
 def index():
-    # get the first 4 movies for homepage preview
+    #Get the first 4 movies for homepage preview
     movies = Movie.query.limit(4).all()
     """Homepage with hero section"""
     return render_template('index.html', movies=movies)
@@ -105,7 +108,6 @@ def index():
 def movies_list():
     """
     Display all movies
-    
     TODO (Later in Unit 3): Change this to query from database instead of list
     """
     movies = Movie.query.order_by(Movie.rating.desc()).all()
@@ -117,15 +119,15 @@ def about():
     """About CineMatch page"""
     return render_template('about.html')
 
-@app.route('/add_movie, methods=["GET", "POST"]')
+@app.route('/add_movie', methods=['GET', 'POST'])
 def add_movie():
-    """Add a movie to the database"""
+    """Add a new movie to the database"""
     if request.method == 'POST':
-        # we will add this next
+        #We will add this next
         pass
-
-    # if get request just show form
-    return render_template('add_movie.html')
+    
+    #If GET request, just show the form
+    return render_template("add_movie.html")
 
 # ============================================================================
 # ERROR HANDLERS
@@ -143,15 +145,15 @@ def internal_error(error):
     return render_template('errors/500.html'), 500
 
 
-# ============================================================================
+# =========================
 # RUN APPLICATION
-# ============================================================================
+# =========================
 
 if __name__ == '__main__':
-    # create tables on first run
+    #create tables on first run
     create_tables()
-    # load initial movies if database is empty
+    #load initial movies if database is empty
     load_initial_movies()
-
+    
     # Debug mode: Shows errors and auto-reloads on code changes
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, port=5050)
