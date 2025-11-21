@@ -156,7 +156,8 @@ def add_movie():
         # commit to database (make changes permanent)
         db.session.commit()
 
-
+        # success message
+        flash(f'"{title}" was added successfully!', 'success')
         # redirect to the movies list page
         return redirect(url_for('movies_list'))
     
